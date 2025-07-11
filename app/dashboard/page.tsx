@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ type Target = {
   personalization: string
   status: string
   user_id: string
+  custom_prompt?: string
 }
 
 export default function Dashboard() {
@@ -29,6 +30,7 @@ export default function Dashboard() {
     contact_name: '',
     contact_email: '',
     personalization: '',
+    custom_prompt: '',
     status: 'not_contacted'
   })
   const [open, setOpen] = useState(false)
@@ -46,7 +48,10 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => {
-    if (user?.id) fetchTargets()
+    if (user?.id) {
+      fetchTargets()
+      storeGmailTokens()
+    }
   }, [user])
 
   const fetchTargets = async () => {
@@ -59,6 +64,32 @@ export default function Dashboard() {
     setTargets(data || [])
   }
 
+  const storeGmailTokens = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+  
+    const providerToken = session?.provider_token
+    const refreshToken = session?.provider_refresh_token
+    const currentUser = session?.user
+  
+    if (!providerToken || !refreshToken || !currentUser) return
+  
+    const { data, error } = await supabase.functions.invoke('save-gmail-tokens', {
+      body: {
+        user_id: currentUser.id,
+        email: currentUser.email,
+        access_token: providerToken,
+        refresh_token: refreshToken,
+      },
+    })
+  
+    if (error) {
+      console.error('Failed to store Gmail tokens:', error)
+    } else {
+      console.log('Token storage successful:', data)
+    }
+  }
+  
+
   const handleSubmit = async () => {
     if (!user?.id) return
 
@@ -68,6 +99,7 @@ export default function Dashboard() {
         contact_name: form.contact_name,
         contact_email: form.contact_email,
         personalization: form.personalization,
+        custom_prompt: form.custom_prompt,
         status: form.status
       }).eq('id', form.id)
       if (error) console.error('Update error:', error)
@@ -77,6 +109,7 @@ export default function Dashboard() {
         contact_name: form.contact_name,
         contact_email: form.contact_email,
         personalization: form.personalization,
+        custom_prompt: form.custom_prompt,
         status: form.status,
         user_id: user.id
       })
@@ -84,7 +117,7 @@ export default function Dashboard() {
     }
 
     setOpen(false)
-    setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', status: 'not_contacted' })
+    setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })
     fetchTargets()
   }
 
@@ -95,15 +128,35 @@ export default function Dashboard() {
     fetchTargets()
   }
 
+  async function Automate() {
+    const url = process.env.NEXT_PUBLIC_N8N_WEBHOOK!
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+        }),
+      })
+      const data = await response.json()
+      console.log('Automate response:', data)
+    } catch (error) {
+      console.error('Automate error:', error)
+    }
+  }
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Outreach Dashboard</h1>
         <h1>User Email: {user?.email}</h1>
-        <LoginButton/>
+        <LoginButton />
+        <Button onClick={Automate}>Automate</Button>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', status: 'not_contacted' })}>Add Target</Button>
+            <Button onClick={() => setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })}>Add Target</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -130,6 +183,11 @@ export default function Dashboard() {
                 value={form.personalization}
                 onChange={(e) => setForm({ ...form, personalization: e.target.value })}
               />
+              <Textarea
+                placeholder="Custom Prompt for AI (optional)"
+                value={form.custom_prompt}
+                onChange={(e) => setForm({ ...form, custom_prompt: e.target.value })}
+              />
               <Input
                 placeholder="Status"
                 value={form.status}
@@ -148,6 +206,7 @@ export default function Dashboard() {
             <TableHead>Contact</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Personalization</TableHead>
+            <TableHead>Custom Prompt</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -159,6 +218,7 @@ export default function Dashboard() {
               <TableCell>{target.contact_name}</TableCell>
               <TableCell>{target.contact_email}</TableCell>
               <TableCell>{target.personalization}</TableCell>
+              <TableCell>{target.custom_prompt || '-'}</TableCell>
               <TableCell>{target.status}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -169,9 +229,10 @@ export default function Dashboard() {
                       contact_name: target.contact_name,
                       contact_email: target.contact_email,
                       personalization: target.personalization,
+                      custom_prompt: target.custom_prompt || '',
                       status: target.status
-                    });
-                    setOpen(true);
+                    })
+                    setOpen(true)
                   }}>Edit</Button>
                   <Button size="sm" onClick={() => handleDelete(target.id)}>Delete</Button>
                 </div>
