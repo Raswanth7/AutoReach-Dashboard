@@ -25,6 +25,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { createClient } from "@/utils/supabase/client"
+import Image from "next/image"
+import Link from "next/link"
+import { useSidebar } from "@/components/ui/sidebar"; // Import the hook
 
 // This is sample data.
 const data = {
@@ -76,12 +79,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         avatar: "/file.svg",
       }
 
+  const { state } = useSidebar(); // Get sidebar state
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-1">
-          <Bot className="size-6 text-primary" />
-          <span className="font-bold text-lg tracking-tight">AutoReach</span>
+        <div className={`flex items-center ${state === "expanded" && 'px-2'} py-1`}>
+          <Link href={'/dashboard'} className="flex items-center gap-2">
+            <Image
+              src={'/logo.png'}
+              alt="logo"
+              width={1920}
+              height={1080}
+              className="w-8 h-8"
+            />
+            {/* Only show text when expanded */}
+            {state === "expanded" && (
+              <span className="font-bold text-lg tracking-tight">AutoReach</span>
+            )}
+          </Link>
         </div>
       </SidebarHeader>
       <SidebarContent>

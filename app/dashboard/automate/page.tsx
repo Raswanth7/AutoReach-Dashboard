@@ -36,6 +36,17 @@ export default function AutomateDashboard() {
     status: 'not_contacted'
   })
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("");
+
+  // Filtered targets based on search
+  const filteredTargets = targets.filter((target) => {
+    const q = search.toLowerCase();
+    return (
+      target.company_name.toLowerCase().includes(q) ||
+      target.contact_name.toLowerCase().includes(q) ||
+      target.contact_email.toLowerCase().includes(q)
+    );
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -151,54 +162,62 @@ export default function AutomateDashboard() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Outreach Dashboard</h1>
-        <h1>User Email: {user?.email}</h1>
-        <LoginButton />
-        <Button onClick={Automate}>Automate</Button>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })}>Add Target</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{form.id ? 'Edit Target' : 'Add New Target'}</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <Input
-                placeholder="Company Name"
-                value={form.company_name}
-                onChange={(e) => setForm({ ...form, company_name: e.target.value })}
-              />
-              <Input
-                placeholder="Contact Name"
-                value={form.contact_name}
-                onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
-              />
-              <Input
-                placeholder="Contact Email"
-                value={form.contact_email}
-                onChange={(e) => setForm({ ...form, contact_email: e.target.value })}
-              />
-              <Textarea
-                placeholder="Personalization Notes"
-                value={form.personalization}
-                onChange={(e) => setForm({ ...form, personalization: e.target.value })}
-              />
-              <Textarea
-                placeholder="Custom Prompt for AI (optional)"
-                value={form.custom_prompt}
-                onChange={(e) => setForm({ ...form, custom_prompt: e.target.value })}
-              />
-              <Input
-                placeholder="Status"
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-              />
-              <Button onClick={handleSubmit}>{form.id ? 'Update' : 'Add'}</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+      <div className="flex flex-col gap-4 mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">Outreach Dashboard</h1>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Input
+              placeholder="Search by company, contact, or email..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="min-w-md"
+            />
+            <Button onClick={Automate}>Automate</Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })}>Add Target</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{form.id ? 'Edit Target' : 'Add New Target'}</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Input
+                    placeholder="Company Name"
+                    value={form.company_name}
+                    onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Contact Name"
+                    value={form.contact_name}
+                    onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Contact Email"
+                    value={form.contact_email}
+                    onChange={(e) => setForm({ ...form, contact_email: e.target.value })}
+                  />
+                  <Textarea
+                    placeholder="Personalization Notes"
+                    value={form.personalization}
+                    onChange={(e) => setForm({ ...form, personalization: e.target.value })}
+                  />
+                  <Textarea
+                    placeholder="Custom Prompt for AI (optional)"
+                    value={form.custom_prompt}
+                    onChange={(e) => setForm({ ...form, custom_prompt: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Status"
+                    value={form.status}
+                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  />
+                  <Button onClick={handleSubmit}>{form.id ? 'Update' : 'Add'}</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
       </div>
 
       <Table>
@@ -214,7 +233,7 @@ export default function AutomateDashboard() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {targets.map((target) => (
+          {filteredTargets.map((target) => (
             <TableRow key={target.id}>
               <TableCell>{target.company_name}</TableCell>
               <TableCell>{target.contact_name}</TableCell>

@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Breadcrumb>
               <BreadcrumbList>
                 {breadcrumbs.map((crumb, idx) => (
-                  <React.Fragment key={crumb.href}>
+                  <React.Fragment key={crumb.href + '-' + idx}>
                     {idx !== 0 && <BreadcrumbSeparator className="hidden md:block" />}
                     <BreadcrumbItem>
                       {idx === breadcrumbs.length - 1 ? (

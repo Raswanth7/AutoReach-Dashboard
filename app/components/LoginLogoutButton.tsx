@@ -4,9 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { signout } from "@/lib/auth-actions";
+import { LogOut } from "lucide-react";
+
+
 
 const LoginButton = () => {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
   useEffect(() => {
@@ -15,19 +19,23 @@ const LoginButton = () => {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
+      setLoading(false);
     };
     fetchUser();
   }, []);
+  if (loading) return null; // or a skeleton/loading spinner
   if (user) {
     return (
-      <Button
+      <div
         onClick={async () => {
           await signout();
           setUser(null);
         }}
+        className="flex flex-row gap-1 items-center"
       >
-        Log out
-      </Button>
+        <LogOut className="text-red-500"/>
+        <h1 className="text-red-500 font-semibold">Log out</h1>
+      </div>
     );
   }
   return (
