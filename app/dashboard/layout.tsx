@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {breadcrumbs.map((crumb, idx) => (
                   <React.Fragment key={crumb.href + '-' + idx}>
                     {idx !== 0 && <BreadcrumbSeparator className="hidden md:block" />}
-                    <BreadcrumbItem>
+                    <BreadcrumbItem className="font-mont">
                       {idx === breadcrumbs.length - 1 ? (
                         <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                       ) : (
@@ -73,7 +73,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 font-mont">
           {children}
         </div>
       </SidebarInset>

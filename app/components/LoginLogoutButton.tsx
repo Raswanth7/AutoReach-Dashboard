@@ -34,7 +34,7 @@ const LoginButton = () => {
         className="flex flex-row gap-1 items-center"
       >
         <LogOut className="text-red-500"/>
-        <h1 className="text-red-500 font-semibold">Log out</h1>
+        <h1 className="text-red-500 font-semibold font-mont">Log out</h1>
       </div>
     );
   }

@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { createClient } from '@/utils/supabase/client'
 import { Textarea } from '@/components/ui/textarea'
 import LoginButton from '@/app/components/LoginLogoutButton' 
+import { Pen, Plus, Settings, Trash2 } from 'lucide-react'
 
 // No breadcrumbs here; let layout handle header
 
@@ -172,10 +173,21 @@ export default function AutomateDashboard() {
               onChange={e => setSearch(e.target.value)}
               className="min-w-md"
             />
-            <Button onClick={Automate}>Automate</Button>
+            <div 
+            className='cursor-pointer border-1 border-black/5 hover:bg-orange-400/80 rounded-lg items-center flex gap-1 px-2 bg-orange-400 [background-image:radial-gradient(88%_100%_at_bottom,rgba(255,255,255,0.5),rgba(255,255,255,0))]'
+            onClick={Automate}
+            >
+              <Settings size={20}/>
+              <h1 className='font-medium'>Automate</h1>
+              </div>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })}>Add Target</Button>
+                <Button 
+                onClick={() => setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })}
+                
+                >
+                <Plus />
+                </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -254,8 +266,12 @@ export default function AutomateDashboard() {
                       status: target.status
                     })
                     setOpen(true)
-                  }}>Edit</Button>
-                  <Button size="sm" onClick={() => handleDelete(target.id)}>Delete</Button>
+                  }}>
+                    <Pen />
+                  </Button>
+                  <Button size="sm" onClick={() => handleDelete(target.id)}>
+                  <Trash2 />
+                  </Button>
                 </div>
               </TableCell>
             </TableRow>

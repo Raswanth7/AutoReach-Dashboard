@@ -95,7 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             />
             {/* Only show text when expanded */}
             {state === "expanded" && (
-              <span className="font-bold text-lg tracking-tight">AutoReach</span>
+              <span className="font-bold text-lg tracking-tight font-mont">AutoReach</span>
             )}
           </Link>
         </div>
