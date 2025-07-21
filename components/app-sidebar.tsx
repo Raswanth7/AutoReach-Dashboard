@@ -46,7 +46,10 @@ const data = {
         {
           title: "Automate Mail",
           url: "/dashboard/automate",
-        },
+        },{
+          title: "Automate Followup",
+          url: "/dashboard/followup",
+        }
       ],
     },
   ],

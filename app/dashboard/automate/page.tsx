@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import LoginButton from '@/app/components/LoginLogoutButton' 
 import { Pen, Plus, Settings, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 
 // No breadcrumbs here; let layout handle header
 
@@ -22,6 +23,7 @@ type Target = {
   status: string
   user_id: string
   custom_prompt?: string
+  allow_followup?: boolean
 }
 
 export default function AutomateDashboard() {
@@ -242,6 +244,7 @@ export default function AutomateDashboard() {
             <TableHead>Personalization</TableHead>
             <TableHead>Custom Prompt</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Followup</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -254,6 +257,18 @@ export default function AutomateDashboard() {
               <TableCell>{target.personalization}</TableCell>
               <TableCell>{target.custom_prompt || '-'}</TableCell>
               <TableCell><Badge className={`${target.status === 'contacted' ? 'bg-green-500' : 'bg-red-500'}`}>{target.status}</Badge></TableCell>
+              <TableCell>
+                <Switch
+                  checked={!!target.allow_followup}
+                  onCheckedChange={async (checked) => {
+                    // Update in DB
+                    await supabase.from('targets').update({ allow_followup: checked }).eq('id', target.id)
+                    // Update in local state
+                    setTargets((prev) => prev.map(t => t.id === target.id ? { ...t, allow_followup: checked } : t))
+                  }}
+                  aria-label="Toggle followup"
+                />
+              </TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={() => {
