@@ -11,6 +11,7 @@ import LoginButton from '@/app/components/LoginLogoutButton'
 import { Pen, Plus, Settings, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
+import { toast } from "sonner";
 
 // No breadcrumbs here; let layout handle header
 
@@ -110,6 +111,17 @@ export default function AutomateDashboard() {
   const handleSubmit = async () => {
     if (!user?.id) return
 
+    // Validation: All required fields except custom_prompt must be filled
+    if (
+      !form.company_name ||
+      !form.contact_name ||
+      !form.contact_email ||
+      !form.personalization
+    ) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
     if (form.id) {
       const { error } = await supabase.from('targets').update({
         company_name: form.company_name,
@@ -135,6 +147,7 @@ export default function AutomateDashboard() {
 
     setOpen(false)
     setForm({ id: null, company_name: '', contact_name: '', contact_email: '', personalization: '', custom_prompt: '', status: 'not_contacted' })
+    toast.success("Added Successfully");
     fetchTargets()
   }
 
@@ -147,6 +160,7 @@ export default function AutomateDashboard() {
 
   async function Automate() {
     const url = process.env.NEXT_PUBLIC_N8N_WEBHOOK!
+    toast("Automate workflow started");
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -221,11 +235,6 @@ export default function AutomateDashboard() {
                     placeholder="Custom Prompt for AI (optional)"
                     value={form.custom_prompt}
                     onChange={(e) => setForm({ ...form, custom_prompt: e.target.value })}
-                  />
-                  <Input
-                    placeholder="Status"
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
                   />
                   <Button onClick={handleSubmit}>{form.id ? 'Update' : 'Add'}</Button>
                 </div>

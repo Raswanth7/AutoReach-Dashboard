@@ -1,5 +1,6 @@
 import SignInWithGoogleButton from '@/app/auth/(auth)/login/components/SigninWithGoogleButton'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 const Navbar = () => {
@@ -18,7 +19,7 @@ const Navbar = () => {
         <div className='flex flex-row items-center gap-6'>
             <div className='flex flex-row items-center gap-9'>
             <h1 className='hover:text-orange-500 cursor-pointer transition-all duration-300 font-mont font-semibold'>Home</h1>
-            <h1 className='hover:text-orange-500 cursor-pointer transition-all duration-300 font-mont font-semibold'>About</h1>
+            <Link href={'/about'} target='_blank'><h1 className='hover:text-orange-500 cursor-pointer transition-all duration-300 font-mont font-semibold'>About</h1></Link>
             <h1 className='hover:text-orange-500 cursor-pointer transition-all duration-300 font-mont font-semibold'>Contact</h1>
             </div>
             <SignInWithGoogleButton/>

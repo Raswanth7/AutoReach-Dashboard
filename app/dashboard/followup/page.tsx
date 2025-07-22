@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Settings } from "lucide-react";
+import { toast } from "sonner";
 
 // Target type as in automate page
  type Target = {
@@ -50,6 +52,26 @@ export default function FollowupDashboard() {
     }
   }, [user]);
 
+  async function Automate() {
+    const url = process.env.NEXT_PUBLIC_N8N_WEBHOOK_FOLLOWUP!
+    toast("Followup workflow started");
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+        }),
+      })
+      const data = await response.json()
+      console.log('Automate response:', data)
+    } catch (error) {
+      console.error('Automate error:', error)
+    }
+  }
+
   const fetchTargets = async () => {
     if (!user?.id) return;
     const { data, error } = await supabase
@@ -73,6 +95,13 @@ export default function FollowupDashboard() {
               onChange={e => setSearch(e.target.value)}
               className="min-w-md"
             />
+                          <div 
+            className='cursor-pointer border-1 border-black/5 hover:bg-orange-400/80 rounded-lg items-center flex gap-1 px-2 bg-orange-400 [background-image:radial-gradient(88%_100%_at_bottom,rgba(255,255,255,0.5),rgba(255,255,255,0))]'
+            onClick={Automate}
+            >
+              <Settings size={20}/>
+              <h1 className='font-medium'>Followup</h1>
+              </div>
           </div>
         </div>
       </div>
@@ -96,7 +125,10 @@ export default function FollowupDashboard() {
               <TableCell>{target.contact_email}</TableCell>
               {/* <TableCell>{target.personalization}</TableCell> */}
               {/* <TableCell>{typeof target.allow_followup === 'boolean' ? (target.allow_followup ? 'Yes' : 'No') : '-'}</TableCell> */}
-              <TableCell>{typeof target.replied === 'boolean' ? (target.replied ? 'Yes' : 'No') : '-'}</TableCell>
+              <TableCell>
+                <Badge className={`${target.replied ? 'bg-green-500' : 'bg-red-500'}`}> {typeof target.replied === 'boolean' ? (target.replied ? 'Yes' : 'No') : '-'}
+                </Badge>
+                </TableCell>
             </TableRow>
           ))}
         </TableBody>

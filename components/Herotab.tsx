@@ -1,5 +1,6 @@
 import React from 'react'
 import { ContainerScroll } from './ui/container-scroll-animation'
+import Image from 'next/image'
 
 const Herotab = () => {
   return (
@@ -16,12 +17,12 @@ const Herotab = () => {
           </>
         }
       >
-        <img
-          src={`/linear.webp`}
+        <Image
+          src={`/assets/Dashboardtab.png`}
           alt="hero"
-          height={720}
-          width={1400}
-          className="mx-auto rounded-2xl object-cover h-full object-left-top"
+          height={1080}
+          width={1920}
+          className="w-full h-full"
           draggable={false}
         />
       </ContainerScroll>

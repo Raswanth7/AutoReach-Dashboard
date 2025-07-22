@@ -6,7 +6,7 @@ const Hero = () => {
     <div className='max-w-5xl items-center flex flex-col text-center gap-8'>
       <div className='flex flex-col gap-5 items-center'>
       <h1 className='text-7xl font-bold font-mont'>Automated Cold Outreach, Supercharged by AI</h1>
-      <h1 className='text-xl font-mont'>Instantly craft and send personalized cold emails from your Gmail powered by AI, triggered with one click.
+      <h1 className='text-xl font-mont'>Instantly craft and send personalized cold emails from your Gmail powered by AI, triggered with <b>one click</b>.
       Save time, boost replies, and never miss a follow-up again.</h1>
       </div>
       <div>
